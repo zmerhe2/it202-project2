@@ -8,34 +8,26 @@
   </head>
   <body>
 
-    <canvas id="myCanvas" width="500" height="500"></canvas>
+    <canvas id="layer2" width="500" height="500" style="position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
+    <canvas id="myCanvas" width="500" height="500" style="position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
     <p id="p1"></p>
+
+
     <style>
-      #myCanvas {background-color: silver;}
+      //#layer2 {background-image: ;}
+      #myCanvas {background-image: url("http://igdsunshinemag.com/Mag/wp-content/uploads/2018/06/Polyquest-Worlds-Full-ss5_1600.jpg");}
+      
+                    
       
     </style>
-    <script>
-      // get a reference to the DOM element
-      var c = document.getElementById("myCanvas");
-      
-      // get a reference to the "2d context", basically, the set of pixels
-      var ctx = c.getContext("2d");
-
-      //var background = new Image();
-      //background.src //="https://1s8svh3tfyxvnubqz3r12buu-wpengine.netdna-ssl.com/wp-content/uploads/20//16/12/Example-Image.gif";
-
-      // Make sure the image is loaded first otherwise nothing will draw.
-      //background.onload = function(){
-          //ctx.drawImage(background,0,0);   
-      //}
-
-    </script>
+ 
 
     
     <script>
     var c = document.getElementById("myCanvas");
     var ctx = c.getContext("2d");
-    var score;
+    var myScore;
+    myScore = new component("30px", "Consolas", "black", -100, 250, "text");
 
     var harm = {x: Math.random() * c.width,
                   y: 50,
@@ -64,6 +56,29 @@
         };
 
 
+    function component(width, height, color, x, y, type) {
+    this.type = type;
+    this.width = width;
+    this.height = height;
+    this.speedX = 0;
+    this.speedY = 0;    
+    this.x = x;
+    this.y = y;    
+    this.update = function() {
+        ctx = myGameArea.context;
+        if (this.type == "text") {
+            ctx.font = this.width + " " + this.height;
+            ctx.fillStyle = color;
+            ctx.fillText(this.text, this.x, this.y);
+        } else {
+            ctx.fillStyle = color;
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+        }
+    }
+
+}
+
+
     function draw(){
       // Create gradient
       //var grd = ctx.createRadialGradient(75, 50, 5, 90, 60, 100);
@@ -76,11 +91,6 @@
       ctx.beginPath();
       ctx.arc(harm.x,harm.y,harm.radius,0,2*Math.PI);
       ctx.stroke();
-      // Fill with gradient
-      //ctx.fillStyle = grd;
-      ctx.fill();
-
-
 
       harm.y -= harm.dir * harm.speed;
       if (harm.y >= 500) {
@@ -89,10 +99,11 @@
         //harm.speed += .1;
       }
 
-
+      //draw benefit 
       ctx.beginPath();
       ctx.arc(benefit.x,benefit.y,benefit.radius,0,2*Math.PI);
       ctx.stroke();
+      ctx.fill();
       benefit.y -= benefit.dir * benefit.speed;
       if (benefit.y >= 500) {
         benefit.x = Math.floor(Math.random() * c.width);
@@ -100,12 +111,24 @@
         //harm.speed += .1;
       }
 
+
+      //draw player
       ctx.beginPath();
       ctx.arc(player.x,player.y,player.radius,0,2*Math.PI);
       ctx.stroke();
       ctx.fill()
 
-          window.onkeydown = function(e) {
+      //edge control
+      if (player.x <= 0 + player.radius){
+        player.x = 0 + player.radius;
+      } else if (player.x >= (c.width - player.radius)) {
+        player.x = 500 - player.radius;
+      }
+
+      //var img = url("https://cdn130.picsart.com/257996918012212.png?r240x240");
+      //ctx.drawImage(img,10,10);
+
+      window.onkeydown = function(e) {
             var kc = e.keyCode;
             e.preventDefault();
 
@@ -133,25 +156,51 @@
         }
 
         //collision
-        collision(player.x, benefit.x);
+        /*collision();
 
-      
+        if(x + dx > ctx.width-ballRadius || x + dx < ballRadius) {
+          dx = -dx;
+        }
+        if(y + dy < ballRadius) {
+          dy = -dy;
+        }
+        else if(y + dy > ctx.height-ballRadius) {
+          if(x > paddleX && x < paddleX + paddleWidth) {
+            dy = -dy;
+          }
+          else {
+            alert("GAME OVER");
+            document.location.reload();
+          }
+        }
+
+        if(rightPressed && paddleX < ctx.width-paddleWidth) {
+          paddleX += 7;
+        }
+        else if(leftPressed && paddleX > 0) {
+          paddleX -= 7;
+        }
+
+        x += dx;
+        y += dy;*/
+ 
       window.requestAnimationFrame(draw)
     }
 
 
-    function collision(obj1, obj2) {
+    /*function collision(obj1, obj2) {
       if (obj1.x <= 0 + obj2.radius){
         return true;
       } else if (obj1.x >= (obj2.width - obj2.radius)) {
         return false;
       }
 
-    }
+    }*/
 
 
     function main(){
       draw();
+      
 
     }
 
